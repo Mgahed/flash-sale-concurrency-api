@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\phpunit.xml" tests="42" assertions="198" errors="0" failures="0" skipped="0" time="9.022189">
+    <testsuite name="Unit" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.033390">
+      <testsuite name="Tests\Unit\ExampleTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Unit\ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.033390">
+        <testcase name="test_that_true_is_true" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Unit\ExampleTest.php" line="12" class="Tests\Unit\ExampleTest" classname="Tests.Unit.ExampleTest" assertions="1" time="0.033390"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Feature" tests="31" assertions="133" errors="0" failures="0" skipped="0" time="6.961524">
+      <testsuite name="Tests\Feature\ConcurrencyTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" tests="6" assertions="28" errors="0" failures="0" skipped="0" time="2.393420">
+        <testcase name="test_concurrent_holds_prevent_overselling" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="16" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="5" time="0.943101"/>
+        <testcase name="test_concurrent_holds_at_stock_boundary" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="70" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="3" time="0.057960"/>
+        <testcase name="test_database_consistency_after_concurrent_operations" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="116" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="3" time="0.080078"/>
+        <testcase name="test_parallel_hold_creation_with_high_contention" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="147" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="5" time="1.077416"/>
+        <testcase name="test_pending_payment_holds_prevent_overselling" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="184" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="10" time="0.171069"/>
+        <testcase name="test_cancelled_order_releases_pending_payment_hold" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="266" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="2" time="0.063797"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ExampleTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.042407">
+        <testcase name="test_the_application_returns_a_successful_response" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ExampleTest.php" line="13" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="1" time="0.042407"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\HoldTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\HoldTest.php" tests="5" assertions="12" errors="0" failures="0" skipped="0" time="3.249245">
+        <testcase name="test_can_create_hold" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\HoldTest.php" line="16" class="Tests\Feature\HoldTest" classname="Tests.Feature.HoldTest" assertions="4" time="0.043519"/>
+        <testcase name="test_cannot_create_hold_with_insufficient_stock" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\HoldTest.php" line="42" class="Tests\Feature\HoldTest" classname="Tests.Feature.HoldTest" assertions="2" time="0.041820"/>
+        <testcase name="test_hold_decrements_available_stock" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\HoldTest.php" line="60" class="Tests\Feature\HoldTest" classname="Tests.Feature.HoldTest" assertions="1" time="0.044800"/>
+        <testcase name="test_expired_holds_are_released_by_command" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\HoldTest.php" line="80" class="Tests\Feature\HoldTest" classname="Tests.Feature.HoldTest" assertions="2" time="3.083913"/>
+        <testcase name="test_validation_errors_for_invalid_hold_data" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\HoldTest.php" line="114" class="Tests\Feature\HoldTest" classname="Tests.Feature.HoldTest" assertions="3" time="0.035194"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\IntegrationTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\IntegrationTest.php" tests="3" assertions="17" errors="0" failures="0" skipped="0" time="0.306849">
+        <testcase name="test_complete_flash_sale_flow" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\IntegrationTest.php" line="16" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="10" time="0.085831"/>
+        <testcase name="test_failed_payment_flow_releases_stock" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\IntegrationTest.php" line="80" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="4" time="0.061243"/>
+        <testcase name="test_multiple_concurrent_purchases" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\IntegrationTest.php" line="137" class="Tests\Feature\IntegrationTest" classname="Tests.Feature.IntegrationTest" assertions="3" time="0.159775"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\OrderTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\OrderTest.php" tests="4" assertions="14" errors="0" failures="0" skipped="0" time="0.162650">
+        <testcase name="test_can_create_order_from_valid_hold" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\OrderTest.php" line="15" class="Tests\Feature\OrderTest" classname="Tests.Feature.OrderTest" assertions="8" time="0.044416"/>
+        <testcase name="test_cannot_create_order_from_expired_hold" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\OrderTest.php" line="53" class="Tests\Feature\OrderTest" classname="Tests.Feature.OrderTest" assertions="2" time="0.044035"/>
+        <testcase name="test_cannot_create_order_from_used_hold" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\OrderTest.php" line="75" class="Tests\Feature\OrderTest" classname="Tests.Feature.OrderTest" assertions="2" time="0.037033"/>
+        <testcase name="test_cannot_create_order_from_released_hold" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\OrderTest.php" line="97" class="Tests\Feature\OrderTest" classname="Tests.Feature.OrderTest" assertions="2" time="0.037166"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ProductTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ProductTest.php" tests="3" assertions="5" errors="0" failures="0" skipped="0" time="0.120038">
+        <testcase name="test_can_get_product_with_stock" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ProductTest.php" line="13" class="Tests\Feature\ProductTest" classname="Tests.Feature.ProductTest" assertions="2" time="0.041998"/>
+        <testcase name="test_product_not_found_returns_404" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ProductTest.php" line="35" class="Tests\Feature\ProductTest" classname="Tests.Feature.ProductTest" assertions="1" time="0.032628"/>
+        <testcase name="test_available_stock_excludes_active_holds" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ProductTest.php" line="41" class="Tests\Feature\ProductTest" classname="Tests.Feature.ProductTest" assertions="2" time="0.045413"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\RaceConditionTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" tests="4" assertions="36" errors="0" failures="0" skipped="0" time="0.451182">
+        <testcase name="test_webhook_delay_does_not_allow_overselling" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" line="19" class="Tests\Feature\RaceConditionTest" classname="Tests.Feature.RaceConditionTest" assertions="16" time="0.083329"/>
+        <testcase name="test_multiple_pending_payments_all_reserve_stock" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" line="136" class="Tests\Feature\RaceConditionTest" classname="Tests.Feature.RaceConditionTest" assertions="14" time="0.168834"/>
+        <testcase name="test_rapid_order_creation_prevents_overselling" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" line="209" class="Tests\Feature\RaceConditionTest" classname="Tests.Feature.RaceConditionTest" assertions="4" time="0.158110"/>
+        <testcase name="test_cache_inconsistency_corrected_by_db" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" line="264" class="Tests\Feature\RaceConditionTest" classname="Tests.Feature.RaceConditionTest" assertions="2" time="0.040909"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\WebhookTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\WebhookTest.php" tests="5" assertions="20" errors="0" failures="0" skipped="0" time="0.235734">
+        <testcase name="test_webhook_marks_order_as_paid_on_success" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\WebhookTest.php" line="17" class="Tests\Feature\WebhookTest" classname="Tests.Feature.WebhookTest" assertions="5" time="0.047704"/>
+        <testcase name="test_webhook_cancels_order_on_failure" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\WebhookTest.php" line="60" class="Tests\Feature\WebhookTest" classname="Tests.Feature.WebhookTest" assertions="5" time="0.050373"/>
+        <testcase name="test_webhook_is_idempotent" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\WebhookTest.php" line="104" class="Tests\Feature\WebhookTest" classname="Tests.Feature.WebhookTest" assertions="5" time="0.052682"/>
+        <testcase name="test_webhook_handles_out_of_order_delivery" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\WebhookTest.php" line="146" class="Tests\Feature\WebhookTest" classname="Tests.Feature.WebhookTest" assertions="4" time="0.052168"/>
+        <testcase name="test_webhook_validation_fails_with_missing_fields" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\WebhookTest.php" line="201" class="Tests\Feature\WebhookTest" classname="Tests.Feature.WebhookTest" assertions="1" time="0.032806"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Concurrency" tests="6" assertions="28" errors="0" failures="0" skipped="0" time="1.583128">
+      <testsuite name="Tests\Feature\ConcurrencyTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" tests="6" assertions="28" errors="0" failures="0" skipped="0" time="1.583128">
+        <testcase name="test_concurrent_holds_prevent_overselling" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="16" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="5" time="0.177057"/>
+        <testcase name="test_concurrent_holds_at_stock_boundary" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="70" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="3" time="0.059239"/>
+        <testcase name="test_database_consistency_after_concurrent_operations" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="116" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="3" time="0.075670"/>
+        <testcase name="test_parallel_hold_creation_with_high_contention" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="147" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="5" time="1.115192"/>
+        <testcase name="test_pending_payment_holds_prevent_overselling" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="184" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="10" time="0.080404"/>
+        <testcase name="test_cancelled_order_releases_pending_payment_hold" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\ConcurrencyTest.php" line="266" class="Tests\Feature\ConcurrencyTest" classname="Tests.Feature.ConcurrencyTest" assertions="2" time="0.075566"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="RaceCondition" tests="4" assertions="36" errors="0" failures="0" skipped="0" time="0.444147">
+      <testsuite name="Tests\Feature\RaceConditionTest" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" tests="4" assertions="36" errors="0" failures="0" skipped="0" time="0.444147">
+        <testcase name="test_webhook_delay_does_not_allow_overselling" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" line="19" class="Tests\Feature\RaceConditionTest" classname="Tests.Feature.RaceConditionTest" assertions="16" time="0.082498"/>
+        <testcase name="test_multiple_pending_payments_all_reserve_stock" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" line="136" class="Tests\Feature\RaceConditionTest" classname="Tests.Feature.RaceConditionTest" assertions="14" time="0.170935"/>
+        <testcase name="test_rapid_order_creation_prevents_overselling" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" line="209" class="Tests\Feature\RaceConditionTest" classname="Tests.Feature.RaceConditionTest" assertions="4" time="0.151381"/>
+        <testcase name="test_cache_inconsistency_corrected_by_db" file="C:\Mgahed\projects\wamp64\www\getpayin\flashSaleCheckout\tests\Feature\RaceConditionTest.php" line="264" class="Tests\Feature\RaceConditionTest" classname="Tests.Feature.RaceConditionTest" assertions="2" time="0.039332"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

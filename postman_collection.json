@@ -1,0 +1,1024 @@
+{
+	"info": {
+		"_postman_id": "781b431b-7143-4859-9678-54372c30cb00",
+		"name": "Flash-Sale Checkout API",
+		"description": "Complete API collection for the Flash-Sale Checkout system.\n\n## Features\n- Product stock management\n- Temporary hold creation (2-minute expiry)\n- Order creation from holds\n- Idempotent payment webhooks\n\n## Setup\n1. Set the `base_url` variable to your API URL (default: http://localhost:8000)\n2. Run requests in order for demo flow\n3. IDs are automatically captured and stored in variables",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23665147"
+	},
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get Product Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has product data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('name');",
+									"    pm.expect(jsonData).to.have.property('price');",
+									"    pm.expect(jsonData).to.have.property('stock_total');",
+									"    pm.expect(jsonData).to.have.property('stock_sold');",
+									"    pm.expect(jsonData).to.have.property('available_stock');",
+									"});",
+									"",
+									"// Save product_id for subsequent requests",
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"product_id\", jsonData.id);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"description": "Get product information including:\n- Product details (name, price)\n- Total stock\n- Stock sold\n- Available stock (cached)\n\nAvailable stock is calculated as: `stock_total - stock_sold - active_holds`"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/products/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"products",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Flash Sale - Limited Edition Widget\",\n    \"price\": \"99.99\",\n    \"stock_total\": 100,\n    \"stock_sold\": 0,\n    \"available_stock\": 100\n}"
+						}
+					]
+				}
+			],
+			"description": "Product-related endpoints for viewing stock information"
+		},
+		{
+			"name": "Holds",
+			"item": [
+				{
+					"name": "Create Hold",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has hold_id and expires_at\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('hold_id');",
+									"    pm.expect(jsonData).to.have.property('expires_at');",
+									"});",
+									"",
+									"// Save hold_id for subsequent requests",
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"hold_id\", jsonData.hold_id);",
+									"",
+									"console.log(\"Hold created with ID:\", jsonData.hold_id);",
+									"console.log(\"Expires at:\", jsonData.expires_at);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": {{product_id}},\n    \"qty\": 5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/holds",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"holds"
+							]
+						},
+						"description": "Create a temporary hold (reservation) for a product.\n\n**Features:**\n- Holds are valid for 2 minutes\n- Stock is immediately reserved\n- Prevents overselling under concurrency\n- Automatically released on expiry\n\n**Request Body:**\n- `product_id` (integer, required): Product to reserve\n- `qty` (integer, required): Quantity to reserve (min: 1)\n\n**Possible Errors:**\n- 400: Insufficient stock available\n- 422: Validation error"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"product_id\": 1,\n    \"qty\": 5\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/holds",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"holds"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"hold_id\": 1,\n    \"expires_at\": \"2025-11-29T15:32:00.000000Z\"\n}"
+						},
+						{
+							"name": "Insufficient Stock",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"product_id\": 1,\n    \"qty\": 1000\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/holds",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"holds"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Insufficient stock available\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Hold - Large Quantity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": {{product_id}},\n    \"qty\": 20\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/holds",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"holds"
+							]
+						},
+						"description": "Example of creating a hold with larger quantity"
+					},
+					"response": []
+				}
+			],
+			"description": "Hold (reservation) management endpoints"
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order from Hold",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has order details\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('hold_id');",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"    pm.expect(jsonData).to.have.property('amount');",
+									"    pm.expect(jsonData.status).to.eql('pending_payment');",
+									"});",
+									"",
+									"// Save order_id for webhook",
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"order_id\", jsonData.id);",
+									"",
+									"console.log(\"Order created with ID:\", jsonData.id);",
+									"console.log(\"Amount:\", jsonData.amount);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"hold_id\": {{hold_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
+						},
+						"description": "Create an order from a valid hold.\n\n**Requirements:**\n- Hold must exist\n- Hold must not be expired\n- Hold must not be already used\n- Hold must not be released\n\n**Request Body:**\n- `hold_id` (integer, required): ID of valid hold\n\n**Order Status:**\n- Created with status: `pending_payment`\n- Amount calculated from product price × quantity\n\n**Possible Errors:**\n- 400: Hold is expired/used/released\n- 422: Validation error"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"hold_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/orders",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"orders"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"hold_id\": 1,\n    \"status\": \"pending_payment\",\n    \"amount\": \"499.95\",\n    \"created_at\": \"2025-11-29T15:30:30.000000Z\"\n}"
+						},
+						{
+							"name": "Expired Hold",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"hold_id\": 999\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/orders",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"orders"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Hold is expired and cannot be used\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Order creation endpoints"
+		},
+		{
+			"name": "Webhooks",
+			"item": [
+				{
+					"name": "Payment Webhook - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Payment processed successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"    pm.expect(jsonData.status).to.be.oneOf(['success', 'already_processed']);",
+									"});",
+									"",
+									"console.log(\"Webhook processed:\", pm.response.json());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate unique idempotency key",
+									"pm.collectionVariables.set(\"idempotency_key\", \"webhook-\" + Date.now() + \"-\" + Math.random().toString(36).substring(7));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": {{order_id}},\n    \"payment_status\": \"success\",\n    \"idempotency_key\": \"{{idempotency_key}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/payments/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"payments",
+								"webhook"
+							]
+						},
+						"description": "Process a successful payment webhook.\n\n**Features:**\n- Idempotent (same idempotency_key = no duplicate processing)\n- Out-of-order safe (webhook can arrive before order)\n- Updates order status to `paid`\n- Increments product stock_sold\n\n**Request Body:**\n- `order_id` (integer, required): Order ID\n- `payment_status` (string, required): 'success' or 'failed'\n- `idempotency_key` (string, required): Unique identifier\n\n**Responses:**\n- `success`: Payment processed, order marked as paid\n- `already_processed`: Duplicate webhook (idempotent)\n- `pending_order`: Webhook arrived before order creation"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"order_id\": 1,\n    \"payment_status\": \"success\",\n    \"idempotency_key\": \"unique-key-123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/payments/webhook",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"payments",
+										"webhook"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Payment successful, order marked as paid\",\n    \"order_id\": 1\n}"
+						},
+						{
+							"name": "Already Processed (Idempotent)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"order_id\": 1,\n    \"payment_status\": \"success\",\n    \"idempotency_key\": \"unique-key-123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/payments/webhook",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"payments",
+										"webhook"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"already_processed\",\n    \"message\": \"Webhook already processed\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Payment Webhook - Failed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Payment failed processed\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"    pm.expect(jsonData.status).to.be.oneOf(['failed', 'already_processed']);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate unique idempotency key for failed payment",
+									"pm.collectionVariables.set(\"idempotency_key\", \"webhook-failed-\" + Date.now() + \"-\" + Math.random().toString(36).substring(7));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": {{order_id}},\n    \"payment_status\": \"failed\",\n    \"idempotency_key\": \"{{idempotency_key}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/payments/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"payments",
+								"webhook"
+							]
+						},
+						"description": "Process a failed payment webhook.\n\n**Actions:**\n- Marks order as `cancelled`\n- Releases the hold\n- Restores stock to available inventory\n\n**Use Case:**\n- Credit card declined\n- Insufficient funds\n- Payment gateway error"
+					},
+					"response": [
+						{
+							"name": "Failed Payment Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"order_id\": 1,\n    \"payment_status\": \"failed\",\n    \"idempotency_key\": \"failed-payment-456\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/payments/webhook",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"payments",
+										"webhook"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"failed\",\n    \"message\": \"Payment failed, order cancelled and stock released\",\n    \"order_id\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "Payment Webhook - Duplicate (Test Idempotency)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Webhook marked as already processed\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('already_processed');",
+									"});",
+									"",
+									"console.log(\"✓ Idempotency test passed - webhook not processed twice\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": {{order_id}},\n    \"payment_status\": \"success\",\n    \"idempotency_key\": \"{{idempotency_key}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/payments/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"payments",
+								"webhook"
+							]
+						},
+						"description": "Send the same webhook again to test idempotency.\n\n**Expected Result:**\n- Returns `already_processed`\n- No duplicate state changes\n- Order remains in previous state"
+					},
+					"response": []
+				},
+				{
+					"name": "Payment Webhook - Out of Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Webhook stored as pending\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('pending_order');",
+									"});",
+									"",
+									"console.log(\"✓ Out-of-order webhook handled - stored for reconciliation\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate unique idempotency key",
+									"pm.collectionVariables.set(\"idempotency_key\", \"out-of-order-\" + Date.now());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": 99999,\n    \"payment_status\": \"success\",\n    \"idempotency_key\": \"{{idempotency_key}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/payments/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"payments",
+								"webhook"
+							]
+						},
+						"description": "Simulate webhook arriving before order is created.\n\n**Scenario:**\n- Payment provider sends webhook quickly\n- Order creation API slower to respond\n- Webhook arrives first\n\n**Handling:**\n- Webhook stored with status `pending_order`\n- Reconciled when order is created\n- No data loss or errors"
+					},
+					"response": []
+				}
+			],
+			"description": "Payment webhook endpoints for processing payment results"
+		},
+		{
+			"name": "Complete Purchase Flow",
+			"item": [
+				{
+					"name": "1. Get Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"product_id\", jsonData.id);",
+									"console.log(\"Step 1: Product ID saved -\", jsonData.id);",
+									"console.log(\"Available Stock:\", jsonData.available_stock);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						},
+						"description": "**Step 1 of 4**: Get product information"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Create Hold",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"hold_id\", jsonData.hold_id);",
+									"console.log(\"Step 2: Hold ID saved -\", jsonData.hold_id);",
+									"console.log(\"Expires at:\", jsonData.expires_at);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": {{product_id}},\n    \"qty\": 90\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/holds",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"holds"
+							]
+						},
+						"description": "**Step 2 of 4**: Create hold (reserve stock)"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Create Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"pm.collectionVariables.set(\"order_id\", jsonData.id);",
+									"console.log(\"Step 3: Order ID saved -\", jsonData.id);",
+									"console.log(\"Amount:\", jsonData.amount);",
+									"console.log(\"Status:\", jsonData.status);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"hold_id\": {{hold_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
+						},
+						"description": "**Step 3 of 4**: Create order from hold"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Complete Payment",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"orderId = pm.collectionVariables.get(\"order_id\");\r",
+									"pm.collectionVariables.set(\"idempotency_key\", \"flow-\" + orderId);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"console.log(\"Step 4: Payment processed -\", jsonData.status);",
+									"console.log(\"✓ Complete purchase flow finished!\");",
+									"console.log(\"\\n→ Now check product stock - it should be reduced\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"order_id\": {{order_id}},\n    \"payment_status\": \"success\",\n    \"idempotency_key\": \"{{idempotency_key}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/payments/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"payments",
+								"webhook"
+							]
+						},
+						"description": "**Step 4 of 4**: Process successful payment\n\n**Result:**\n- Order marked as paid\n- Stock sold incremented\n- Purchase complete!"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Verify Final Stock",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"console.log(\"Final Stock Status:\");",
+									"console.log(\"- Total Stock:\", jsonData.stock_total);",
+									"console.log(\"- Stock Sold:\", jsonData.stock_sold);",
+									"console.log(\"- Available:\", jsonData.available_stock);",
+									"console.log(\"\\n✅ Purchase flow complete!\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{product_id}}"
+							]
+						},
+						"description": "**Step 5**: Verify stock was updated correctly"
+					},
+					"response": []
+				}
+			],
+			"description": "Complete end-to-end purchase flow.\n\n**Run in order:**\n1. Get Product\n2. Create Hold\n3. Create Order\n4. Complete Payment\n5. Verify Final Stock\n\nAll IDs are automatically captured and used in subsequent requests."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "product_id",
+			"value": "1"
+		},
+		{
+			"key": "hold_id",
+			"value": ""
+		},
+		{
+			"key": "order_id",
+			"value": ""
+		},
+		{
+			"key": "idempotency_key",
+			"value": ""
+		}
+	]
+}
